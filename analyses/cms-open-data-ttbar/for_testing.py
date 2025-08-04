@@ -17,6 +17,7 @@ import hist
 import matplotlib.pyplot as plt
 import numpy as np
 from dask.distributed import Client, LocalCluster
+from dask_jobqueue import SLURMCluster
 
 import utils.plotting  # noqa: E402
 utils.plotting.set_style()
@@ -278,10 +279,25 @@ if __name__ == "__main__":
     parser.add_argument("--chunksize", "-c", type=int, default=200000, help="Chunksize")
     parser.add_argument("--n-workers", "-w", type=int, default=1, help="Number of workers")
     parser.add_argument("--force", "-f", action="store_true", help="Force recompute")
+    parser.add_argument("--local", "-l", action="store_true", help="Use local files")
     args = parser.parse_args()
 
     cluster = LocalCluster(n_workers=args.n_workers, threads_per_worker=1)
+    #cluster = SLURMCluster(
+    #    #queue="short",
+    #    queue="standard",
+    #    #walltime="5:00:00",
+    #    cores=1,
+    #    processes=1,
+    #    memory="100G",
+    #    #log_directory="slurm_logs",
+    #    #local_directory="slurm_logs",
+    #)
+
+    #cluster.adapt(minimum=args.n_workers, maximum=args.n_workers)
     client = Client(cluster)
+    print("Waiting for workers")
+    client.wait_for_workers(args.n_workers)
 
     N_FILES_MAX_PER_SAMPLE = args.files_per_sample
     chunksize = args.chunksize
@@ -306,7 +322,13 @@ if __name__ == "__main__":
             #af_name=utils.config["benchmarking"]["AF_NAME"],  # local files on /data for af_name="ssl-dev"
             #input_from_eos=utils.config["benchmarking"]["INPUT_FROM_EOS"],
             #xcache_atlas_prefix=utils.config["benchmarking"]["XCACHE_ATLAS_PREFIX"],
+            local=args.local,
         )
+
+        #fileset_new = {}
+        #fileset_new["wjets__nominal"] = fileset["wjets__nominal"]
+        #fileset = fileset_new
+        #print(fileset)
 
         print(f"processes in fileset: {list(fileset.keys())}")
         print(f"\nexample of information in fileset:\n{{\n  'files': [{fileset['ttbar__nominal']['files'][0]}, ...],")
@@ -314,6 +336,7 @@ if __name__ == "__main__":
 
         NanoAODSchema.warn_missing_crossrefs = False # silences warnings about branches we will not use here
         cloudpickle.register_pickle_by_value(utils) # serialize methods and objects in utils so that they can be accessed within the coffea processor
+        
         executor = processor.DaskExecutor(client=client)
         #executor = processor.IterativeExecutor()
 
@@ -350,7 +373,10 @@ if __name__ == "__main__":
         # dump information into a csv file
         print("Dumping information into a csv file")
         import csv
-        log_file = "report.csv"
+        #log_file = "report.csv"
+        log_file = "report_newpsi.csv"
+        if args.local:
+            log_file = "report_local.csv"
         file_exists = os.path.isfile(log_file)
         from datetime import datetime
         timestamp = datetime.now().isoformat()

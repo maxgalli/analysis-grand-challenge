@@ -6,7 +6,7 @@ import urllib
 
 # If local_data_cache is a writable path, this function will download any missing file into it and
 # then return file paths corresponding to these local copies.
-def construct_fileset(n_files_max_per_sample, use_xcache=False, af_name="", local_data_cache=None, input_from_eos=False, xcache_atlas_prefix=None):
+def construct_fileset(n_files_max_per_sample, use_xcache=False, af_name="", local_data_cache=None, input_from_eos=False, xcache_atlas_prefix=None, local=False):
     if af_name == "ssl-dev":
         if use_xcache:
             raise RuntimeError("`use_xcache` and `af_name='ssl-dev'` are incompatible. Please only use one of them.")
@@ -63,6 +63,9 @@ def construct_fileset(n_files_max_per_sample, use_xcache=False, af_name="", loca
             elif input_from_eos:
                 file_paths = [f.replace("https://xrootd-local.unl.edu:1094//store/user/AGC/nanoAOD",
                                         "root://eospublic.cern.ch//eos/opendata/cms/upload/agc/1.0.0/") for f in file_paths]
+            elif local:
+                # point to local files on /data
+                file_paths = [f.replace("https://xrootd-local.unl.edu:1094//store/user/AGC/nanoAOD", "/scratch/gallim/240730_AGC") for f in file_paths]
 
             if xcache_atlas_prefix is not None:
                 # prepend xcache to paths

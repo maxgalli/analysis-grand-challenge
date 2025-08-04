@@ -76,21 +76,22 @@ if __name__ == "__main__":
     file_dict = defaultdict(dict)
 
     # ttbar
-    update_dict(file_dict, "ttbar", "nominal", [19980, 19981])
-    update_dict(file_dict, "ttbar", "scaledown", 19983)
-    update_dict(file_dict, "ttbar", "scaleup", 19985)
-    update_dict(file_dict, "ttbar", "ME_var", 19978)
-    update_dict(file_dict, "ttbar", "PS_var", 19999)
+    #update_dict(file_dict, "ttbar", "nominal", [19980, 19981])
+    #update_dict(file_dict, "ttbar", "scaledown", 19983)
+    #update_dict(file_dict, "ttbar", "scaleup", 19985)
+    #update_dict(file_dict, "ttbar", "ME_var", 19978)
+    #update_dict(file_dict, "ttbar", "PS_var", 19999)
 
-    # single top
-    update_dict(file_dict, "single_top_s_chan", "nominal", 19394)
-    update_dict(file_dict, "single_top_t_chan", "nominal", [19406, 19408])
-    update_dict(file_dict, "single_top_tW", "nominal", [19412, 19419])
+    ## single top
+    #update_dict(file_dict, "single_top_s_chan", "nominal", 19394)
+    #update_dict(file_dict, "single_top_t_chan", "nominal", [19406, 19408])
+    #update_dict(file_dict, "single_top_tW", "nominal", [19412, 19419])
 
-    # W+jets
-    update_dict(file_dict, "wjets", "nominal", [20547, 20548])
+    ## W+jets
+    #update_dict(file_dict, "wjets", "nominal", [20547, 20548])
 
-    # data
-    update_dict(file_dict, "data", "nominal", [24119, 24120])
+    ## data
+    #update_dict(file_dict, "data", "nominal", [24119, 24120])
+    update_dict(file_dict, "data", "nominal", [24119])
 
     write_to_file(file_dict, "ntuples.json")
